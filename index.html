@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>一个学期 | A Semester</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
+</head>
+<body>
+    <!-- 背景层 -->
+    <div class="sky-background">
+        <div class="stars"></div>
+        <div class="moon"></div>
+        <div class="city-silhouette"></div>
+    </div>
+
+    <div id="app">
+        <!-- 开始界面 -->
+        <div id="start-screen" class="screen active">
+            <div class="title-container">
+                <h1 class="game-title">一个学期</h1>
+                <p class="game-subtitle">A SEMESTER</p>
+                <p class="game-description">你将做出选择。然后承担后果。</p>
+            </div>
+            <button id="start-btn" class="pixel-btn">开始游戏</button>
+            <p class="control-hint">
+                <span class="hint-icon">⇦</span> 滑动或点击 <span class="hint-icon">⇨</span>
+            </p>
+        </div>
+
+        <!-- 难度选择界面 -->
+        <div id="difficulty-screen" class="screen">
+            <!-- 难度选择卡牌区域 -->
+            <div class="difficulty-card-area">
+                <div id="difficulty-card" class="card difficulty-card" draggable="false">
+                    <div class="card-texture"></div>
+
+                    <!-- 难度选择标题 -->
+                    <div class="difficulty-title-section">
+                        <p id="difficulty-title" class="difficulty-title">新生，你准备好迎接这个学期了吗？</p>
+                    </div>
+
+                    <!-- 难度选项展示 -->
+                    <div class="difficulty-options-display">
+                        <div class="difficulty-option-preview" id="difficulty-preview">
+                            <div class="preview-icon" id="preview-icon">⚖️</div>
+                            <div class="preview-name" id="preview-name">标准模式</div>
+                            <div class="preview-desc" id="preview-desc">默认难度，真实大学体验</div>
+                        </div>
+                    </div>
+
+                    <!-- 难度选择按钮 -->
+                    <div class="difficulty-buttons">
+                        <button id="diff-easy-btn" class="difficulty-button diff-button-left">
+                            <span class="diff-icon">☕</span>
+                            <span class="diff-text">轻松模式</span>
+                            <span class="diff-hint">新手友好</span>
+                        </button>
+                        <button id="diff-standard-btn" class="difficulty-button diff-button-center selected">
+                            <span class="diff-icon">⚖️</span>
+                            <span class="diff-text">标准模式</span>
+                            <span class="diff-hint">真实体验</span>
+                        </button>
+                        <button id="diff-hard-btn" class="difficulty-button diff-button-right">
+                            <span class="diff-icon">🔥</span>
+                            <span class="diff-text">地狱模式</span>
+                            <span class="diff-hint">随时会崩</span>
+                        </button>
+                    </div>
+
+                    <!-- 确认按钮 -->
+                    <button id="confirm-difficulty-btn" class="confirm-difficulty-btn">开始挑战</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 游戏界面 -->
+        <div id="game-screen" class="screen">
+            <!-- 顶部状态栏 - 横向进度条风格 -->
+            <div class="top-bar">
+                <!-- 回到难度选择按钮 -->
+                <button id="back-to-difficulty-btn" class="back-to-difficulty-btn" title="重新选择难度">
+                    <span class="back-icon">↺</span>
+                </button>
+
+                <div class="status-bars">
+                    <!-- 精力 -->
+                    <div class="status-bar">
+                        <div class="status-bar-header">
+                            <div class="status-bar-icon">☕</div>
+                            <div class="status-bar-label">精力</div>
+                        </div>
+                        <div class="status-bar-track">
+                            <div class="status-bar-fill energy-fill" id="energy-fill"></div>
+                            <div class="status-bar-dot energy-dot" id="energy-dot"></div>
+                        </div>
+                    </div>
+
+                    <!-- 学业 -->
+                    <div class="status-bar">
+                        <div class="status-bar-header">
+                            <div class="status-bar-icon">📖</div>
+                            <div class="status-bar-label">学业</div>
+                        </div>
+                        <div class="status-bar-track">
+                            <div class="status-bar-fill academics-fill" id="academics-fill"></div>
+                            <div class="status-bar-dot academics-dot" id="academics-dot"></div>
+                        </div>
+                    </div>
+
+                    <!-- 关系 -->
+                    <div class="status-bar">
+                        <div class="status-bar-header">
+                            <div class="status-bar-icon">❤️</div>
+                            <div class="status-bar-label">关系</div>
+                        </div>
+                        <div class="status-bar-track">
+                            <div class="status-bar-fill connection-fill" id="connection-fill"></div>
+                            <div class="status-bar-dot connection-dot" id="connection-dot"></div>
+                        </div>
+                    </div>
+
+                    <!-- 自我 -->
+                    <div class="status-bar">
+                        <div class="status-bar-header">
+                            <div class="status-bar-icon">🪞</div>
+                            <div class="status-bar-label">自我</div>
+                        </div>
+                        <div class="status-bar-track">
+                            <div class="status-bar-fill self-fill" id="self-fill"></div>
+                            <div class="status-bar-dot self-dot" id="self-dot"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 周数显示 - 居中在进度条下方 -->
+                <div class="week-display">
+                    <span class="week-text">第</span>
+                    <span id="week-number" class="week-number">1</span>
+                    <span class="week-text">周</span>
+                </div>
+            </div>
+
+            <!-- 中央卡牌区域 -->
+            <div class="card-area">
+                <div id="card" class="card" draggable="false">
+                    <div class="card-texture"></div>
+
+                    <!-- 人物区域（顶部） -->
+                    <div class="character-section">
+                        <div id="character-avatar" class="character-avatar">
+                            <span id="avatar-emoji"></span>
+                        </div>
+                        <div id="character-info" class="character-info">
+                            <span id="character-name" class="character-name"></span>
+                            <span id="character-role" class="character-role"></span>
+                        </div>
+                    </div>
+
+                    <!-- 事件文案（中部） -->
+                    <div class="card-content">
+                        <p id="event-text" class="event-text"></p>
+                    </div>
+
+                    <!-- 卡牌底部按钮 -->
+                    <div class="card-buttons">
+                        <button id="btn-left" class="card-button card-button-left">
+                            <span class="card-btn-icon">◄</span>
+                            <span class="card-btn-text" id="left-btn-text">左选项</span>
+                        </button>
+                        <button id="btn-right" class="card-button card-button-right">
+                            <span class="card-btn-text" id="right-btn-text">右选项</span>
+                            <span class="card-btn-icon">►</span>
+                        </button>
+                    </div>
+
+                    <!-- 滑动提示箭头 -->
+                    <div class="swipe-indicators">
+                        <div class="swipe-indicator-left" id="swipe-left-hint">
+                            <span class="arrow">◄</span>
+                            <span class="hint-text" id="left-hint-text"></span>
+                        </div>
+                        <div class="swipe-indicator-right" id="swipe-right-hint">
+                            <span class="hint-text" id="right-hint-text"></span>
+                            <span class="arrow">►</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 底部滑动提示 -->
+            <div class="bottom-bar">
+                <div class="swipe-hint">
+                    <span class="hint-arrow">◄</span> 左滑
+                </div>
+                <div class="swipe-hint">
+                    右滑 <span class="hint-arrow">►</span>
+                </div>
+            </div>
+
+            <!-- 反馈消息 -->
+            <div id="feedback-message" class="feedback-message"></div>
+        </div>
+
+        <!-- 结局界面 -->
+        <div id="ending-screen" class="screen">
+            <div class="ending-overlay"></div>
+            <div class="ending-content">
+                <div class="ending-icon">⚰️</div>
+                <h2 id="ending-title" class="ending-title"></h2>
+                <p id="ending-text" class="ending-text"></p>
+                <div class="ending-divider"></div>
+                <div id="ending-stats" class="ending-stats"></div>
+            </div>
+            <button id="restart-btn" class="pixel-btn">再来一学期</button>
+        </div>
+    </div>
+
+    <script>
+    // ==================== 音效配置 ====================
+    const SFX = {
+        swipe: new Howl({
+            src: ['sounds/swipe.mp3'],
+            volume: 0.7,
+            preload: true
+        }),
+        positive: new Howl({
+            src: ['sounds/positive.mp3'],
+            volume: 0.8,
+            preload: true
+        }),
+        negative: new Howl({
+            src: ['sounds/negative.mp3'],
+            volume: 0.6,
+            preload: true
+        }),
+        gameover: new Howl({
+            src: ['sounds/gameover.mp3'],
+            volume: 0.8,
+            preload: true
+        }),
+        pressure: new Howl({
+            src: ['sounds/pressure.mp3'],
+            volume: 0.9,
+            preload: true
+        })
+    };
+
+    // 安全播放函数
+    function playSound(soundName) {
+        try {
+            if (SFX[soundName]) {
+                SFX[soundName].stop();
+                SFX[soundName].play();
+            }
+        } catch (e) {
+            console.log('音效播放失败:', soundName, e);
+        }
+    }
+
+    // 初始化音效预加载
+    function initAudio() {
+        Object.values(SFX).forEach(sound => {
+            sound.once('load', () => {
+                console.log('音效加载完成');
+            });
+            sound.once('loaderror', () => {
+                console.log('音效加载失败');
+            });
+        });
+    }
+
+    // ==================== 游戏状态 ====================
+    const gameState = {
+        energy: 50,
+        academics: 50,
+        connection: 50,
+        self: 50,
+        week: 1,
+        daysLeft: 112,
+        ddlPressure: 0,
+        gameOver: false,
+        isAnimating: false,
+        usedEvents: [],
+        inHighPressurePeriod: false,
+        highPressureWeeksLeft: 0
+    };
+
+    // ==================== 难度配置 ====================
+    const DIFFICULTY_CONFIG = {
+        easy: {
+            name: '轻松模式',
+            icon: '☕',
+            description: '初始状态较高，DDL压力慢，适合第一次玩',
+            hint: '新手友好，大多数选择都能安全过关',
+            initialStats: { energy: 95, academics: 90, connection: 85, self: 90 },
+            ddlMultiplier: { min: 0.8, max: 1.2 },
+            ddlThreshold: 55,
+            negativeMultiplier: 0.7,
+            positiveMultiplier: 1.0,
+            highPressureEnergyMultiplier: 1.2,
+            maxWeeks: 65
+        },
+        standard: {
+            name: '标准模式',
+            icon: '⚖️',
+            description: '默认难度，真实大学体验',
+            hint: '需要策略取舍，50%几率自然毕业',
+            initialStats: { energy: 85, academics: 80, connection: 75, self: 80 },
+            ddlMultiplier: { min: 1.2, max: 2.0 },
+            ddlThreshold: 45,
+            negativeMultiplier: 1.0,
+            positiveMultiplier: 1.0,
+            highPressureEnergyMultiplier: 1.5,
+            maxWeeks: 55
+        },
+        hard: {
+            name: '地狱模式',
+            icon: '🔥',
+            description: '初始状态低，DDL压力快，状态扣减放大，挑战你的极限',
+            hint: '咖啡永远不够用，DDL如影随形，随时可能崩',
+            initialStats: { energy: 65, academics: 60, connection: 55, self: 60 },
+            ddlMultiplier: { min: 2.5, max: 4.0 },
+            ddlThreshold: 35,
+            negativeMultiplier: 1.65,
+            positiveMultiplier: 0.7,
+            highPressureEnergyMultiplier: 2.0,
+            highPressureChance: 0.9,
+            highPressureDuration: 10,
+            maxWeeks: 45,
+            hasDebuffEvents: true
+        }
+    };
+
+    let currentDifficulty = 'standard';
+
+    // ==================== 角色数据 ====================
+    const CHARACTERS = {
+        narrator: { name: '', role: '', avatar: '🎓' },
+        roommate: { name: '室友', role: '室友', avatar: '🛏️' },
+        professor: { name: '王教授', role: '任课老师', avatar: '👨‍🏫' },
+        crush: { name: 'TA', role: '暗恋的人', avatar: '💕' },
+        counselor: { name: '辅导员', role: '辅导员', avatar: '📋' },
+        parent: { name: '妈妈', role: '家人', avatar: '📞' },
+        friend: { name: '朋友', role: '朋友', avatar: '👥' },
+        self: { name: '', role: '内心', avatar: '🤔' },
+        club: { name: '社长', role: '社团', avatar: '🎪' },
+        nobody: { name: '', role: '', avatar: '📝' }
+    };
+
+    // ==================== 事件数据 ====================
+    const EVENTS = [
+        {
+            text: "早上七点，闹钟响了。你昨晚三点才睡。",
+            character: CHARACTERS.self,
+            left: { text: "起床去上课", effect: { E: -15, A: +10 } },
+            right: { text: "再睡一小时", effect: { E: +10, A: -15 } }
+        },
+        {
+            text: "室友在打游戏，声音很大，你想休息。",
+            character: CHARACTERS.roommate,
+            left: { text: "忍了", effect: { E: -10, S: -5 } },
+            right: { text: "让他小声点", effect: { C: -10, E: +5 } }
+        },
+        {
+            text: "社团群里在讨论周末活动，但你还有作业没写完。",
+            character: CHARACTERS.club,
+            left: { text: "参加活动", effect: { C: +15, A: -10 } },
+            right: { text: "写作业", effect: { A: +10, C: -10 } }
+        },
+        {
+            text: "朋友圈里，同学们都在晒各种成就和实习offer。",
+            character: CHARACTERS.self,
+            left: { text: "继续刷", effect: { S: -15, E: -5 } },
+            right: { text: "放下手机", effect: { S: +5, C: -5 } }
+        },
+        {
+            text: "期中考试还有一周，你才开始复习。",
+            character: CHARACTERS.professor,
+            left: { text: "通宵复习", effect: { E: -20, A: +15 } },
+            right: { text: "正常复习", effect: { A: +5, E: -5 } }
+        },
+        {
+            text: "「今晚有空吗？」对方发来消息。",
+            character: CHARACTERS.crush,
+            left: { text: "答应", effect: { C: +20, A: -10, E: -5 } },
+            right: { text: "拒绝，要学习", effect: { A: +5, S: -10, C: -5 } }
+        },
+        {
+            text: "辅导员发消息，说你最近出勤率有点低。",
+            character: CHARACTERS.counselor,
+            left: { text: "道歉保证改正", effect: { S: -5, A: +5 } },
+            right: { text: "装死不回", effect: { S: +5, A: -10 } }
+        },
+        {
+            text: "你发现自己在课堂上完全听不懂老师在讲什么。",
+            character: CHARACTERS.professor,
+            left: { text: "课后自学", effect: { E: -15, A: +10 } },
+            right: { text: "摆烂不管", effect: { E: +5, A: -15, S: -5 } }
+        },
+        {
+            text: "父母打来电话，问你这最近怎么样。",
+            character: CHARACTERS.parent,
+            left: { text: "报喜不报忧", effect: { S: -10, C: +5 } },
+            right: { text: "说实话", effect: { S: +5, C: -5 } }
+        },
+        {
+            text: "室友过生日，邀请你一起去聚餐。",
+            character: CHARACTERS.roommate,
+            left: { text: "去", effect: { C: +15, E: -10, A: -5 } },
+            right: { text: "不去", effect: { A: +5, C: -15 } }
+        },
+        {
+            text: "你看到有人在做兼职，一个月能赚两千块。",
+            character: CHARACTERS.nobody,
+            left: { text: "也去找兼职", effect: { E: -15, A: -10, S: +5 } },
+            right: { text: "专心学习", effect: { A: +5, E: +5 } }
+        },
+        {
+            text: "深夜，你刷视频刷到凌晨两点。",
+            character: CHARACTERS.self,
+            left: { text: "继续刷", effect: { E: -10, S: -10 } },
+            right: { text: "强制睡觉", effect: { E: +5, S: -5 } }
+        },
+        {
+            text: "老师说下周要交大作业，现在开始吗？",
+            character: CHARACTERS.professor,
+            left: { text: "现在开始", effect: { E: -10, A: +15 } },
+            right: { text: "再说", effect: { E: +5, A: -10 } }
+        },
+        {
+            text: "朋友心情不好，找你倾诉。",
+            character: CHARACTERS.friend,
+            left: { text: "陪他聊", effect: { C: +15, E: -10 } },
+            right: { text: "敷衍一下", effect: { C: -10, E: +5 } }
+        },
+        {
+            text: "你发现室友在背后议论你。",
+            character: CHARACTERS.roommate,
+            left: { text: "质问他", effect: { C: -15, S: +5 } },
+            right: { text: "装不知道", effect: { S: -10, E: -5 } }
+        },
+        {
+            text: "学校举办篮球赛，班级需要人参加。",
+            character: CHARACTERS.friend,
+            left: { text: "报名", effect: { C: +10, E: -15, A: -5 } },
+            right: { text: "不参加", effect: { A: +5, C: -5 } }
+        },
+        {
+            text: "你在网上看到一篇关于「内卷」的文章。",
+            character: CHARACTERS.self,
+            left: { text: "焦虑地读完", effect: { S: -15, E: -5 } },
+            right: { text: "划走", effect: { S: +5 } }
+        },
+        {
+            text: "小组作业，队友都没动静。",
+            character: CHARACTERS.friend,
+            left: { text: "一个人做完", effect: { E: -20, A: +10, S: -5 } },
+            right: { text: "催队友", effect: { C: -10, E: -5 } }
+        },
+        {
+            text: "周末，你可以去图书馆或者睡觉。",
+            character: CHARACTERS.nobody,
+            left: { text: "图书馆", effect: { A: +10, E: -10 } },
+            right: { text: "睡一天", effect: { E: +15, A: -10 } }
+        },
+        {
+            text: "你开始怀疑自己选的专业到底是不是自己喜欢的。",
+            character: CHARACTERS.self,
+            left: { text: "深入思考", effect: { S: +10, E: -10 } },
+            right: { text: "不想了", effect: { S: -10, E: +5 } }
+        },
+        // DDL压力相关事件
+        {
+            text: "下周有三个DDL同时到来。你感觉到了吗？",
+            character: CHARACTERS.professor,
+            left: { text: "开始赶工", effect: { E: -20, A: +10 } },
+            right: { text: "先玩再说", effect: { A: -15, E: +5 } },
+            isDDL: true
+        },
+        {
+            text: "你发现自己有两周没去上课了。",
+            character: CHARACTERS.counselor,
+            left: { text: "补课", effect: { E: -15, A: +10 } },
+            right: { text: "继续逃", effect: { A: -20, S: -5 } },
+            isDDL: true
+        },
+        {
+            text: "考试时间表出来了，你的考试连着四天。",
+            character: CHARACTERS.professor,
+            left: { text: "制定计划", effect: { E: -5, A: +10, S: +5 } },
+            right: { text: "随缘", effect: { S: -10, A: -10 } },
+            isDDL: true
+        },
+        {
+            text: "你发现还有三天就要交论文，而你只写了标题。",
+            character: CHARACTERS.professor,
+            left: { text: "通宵写", effect: { E: -25, A: +15 } },
+            right: { text: "申请延期", effect: { A: -10, S: -5 } },
+            isDDL: true
+        },
+        {
+            text: "室友问你复习得怎么样了。你觉得呢？",
+            character: CHARACTERS.roommate,
+            left: { text: "还行吧", effect: { S: -5, C: +5 } },
+            right: { text: "别问了", effect: { C: -10, S: -5 } },
+            isDDL: true
+        },
+        {
+            text: "你在朋友圈看到别人已经复习完三轮了。",
+            character: CHARACTERS.self,
+            left: { text: "慌了", effect: { S: -15, E: -10 } },
+            right: { text: "关我什么事", effect: { S: +5, C: -5 } },
+            isDDL: true
+        },
+        {
+            text: "凌晨三点，你还在赶ddl，咖啡已经不管用了。",
+            character: CHARACTERS.self,
+            left: { text: "继续", effect: { E: -25, A: +10 } },
+            right: { text: "睡觉", effect: { A: -15, E: +10 } },
+            isDDL: true
+        },
+        {
+            text: "你发现自己已经记不清上次好好吃饭是什么时候了。",
+            character: CHARACTERS.nobody,
+            left: { text: "去吃顿好的", effect: { E: +10, A: -5 } },
+            right: { text: "继续赶ddl", effect: { E: -15, A: +5 } },
+            isDDL: true
+        }
+    ];
+
+    // ==================== 地狱模式专属Debuff事件池 ====================
+    const DEBUFF_EVENTS = [
+        {
+            text: "「发烧38.5度，室友说你脸红得像猴屁股。」",
+            character: { name: '', role: '生病', avatar: '🤒' },
+            left: { text: "硬撑着去上课", effect: { E: -25, A: +5 } },
+            right: { text: "躺宿舍休息", effect: { E: -10, A: -15 } }
+        },
+        {
+            text: "「情绪崩溃，在厕所哭了半小时，出来还得假装没事。」",
+            character: { name: '', role: '情绪崩溃', avatar: '😭' },
+            left: { text: "找朋友倾诉", effect: { C: +10, S: +5 } },
+            right: { text: "一个人扛着", effect: { S: -20, E: -10 } }
+        },
+        {
+            text: "「室友凌晨三点还在开麦打游戏，你明天早上有课。」",
+            character: { name: '室友', role: '冲突', avatar: '🎮' },
+            left: { text: "忍了", effect: { E: -15, S: -10 } },
+            right: { text: "爆发争吵", effect: { C: -25, S: +5 } }
+        },
+        {
+            text: "「手机突然收到：某科作业0分，因为你交错了文件。」",
+            character: { name: '老师', role: '事故', avatar: '📁' },
+            left: { text: "求老师重判", effect: { S: -15, A: +5 } },
+            right: { text: "接受现实", effect: { A: -20, S: -10 } }
+        },
+        {
+            text: "「钱包丢了，里面有这个月的生活费。」",
+            character: { name: '', role: '意外', avatar: '💸' },
+            left: { text: "向家里要", effect: { S: -15, E: +5 } },
+            right: { text: "自己扛着", effect: { E: -20, C: -10 } }
+        },
+        {
+            text: "「连续失眠第五天，你看着天花板到天亮。」",
+            character: { name: '', role: '失眠', avatar: '😵' },
+            left: { text: "吃褪黑素", effect: { E: -10, S: -5 } },
+            right: { text: "硬扛着", effect: { E: -25, S: -15 } }
+        },
+        {
+            text: "「暗恋的人官宣恋情了，对方不是你。」",
+            character: { name: '', role: '心碎', avatar: '💔' },
+            left: { text: "躲宿舍哭", effect: { S: -20, E: -10 } },
+            right: { text: "假装祝福", effect: { S: -25, C: -5 } }
+        },
+        {
+            text: "「社团群里@你，说活动你缺席了3次，要退你。」",
+            character: { name: '社长', role: '警告', avatar: '⚠️' },
+            left: { text: "道歉解释", effect: { S: -10, C: +5 } },
+            right: { text: "直接退社", effect: { C: -15, A: +5 } }
+        }
+    ];
+
+    // ==================== 结局数据 ====================
+    const ENDINGS = {
+        energy: {
+            title: "崩溃",
+            text: "你彻底崩溃了。\n\n睡眠不足让你连走路都打晃，有一天早上，你无论如何也起不来了。辅导员把你送到了医院，医生说你需要休息。学期提前结束。",
+            icon: "💀"
+        },
+        academics: {
+            title: "挂科",
+            text: "各科挂科，你的学期成绩以零告终。\n\n连最基本的学分都没保住。看着成绩单上那一串刺眼的红色，你不知道该怎么和父母说。",
+            icon: "📕"
+        },
+        connection: {
+            title: "孤独",
+            text: "朋友和室友全都离你而去。\n\n你孤独地度过了整个学期。有一天你想找个人说话，翻开通讯录，却发现不知道该打给谁。",
+            icon: "👤"
+        },
+        self: {
+            title: "迷失",
+            text: "你完全迷失了自己。\n\n不知道为何而学，为谁而努力。你只是在机械地活着，像一具没有灵魂的躯壳。",
+            icon: "🔮"
+        },
+        semester: {
+            balanced: {
+                title: "一个普通的学期",
+                text: "学期结束了。\n\n你活下来了。没有什么特别的惊喜，也没有什么特别的遗憾。这就是大多数人的大学生活吧。",
+                icon: "🎓"
+            },
+            social: {
+                title: "一个热闹的学期",
+                text: "学期结束了。\n\n你认识了很多朋友，参加了很多活动，但成绩单上的数字提醒你，有些东西被你忽略了。",
+                icon: "🎉"
+            },
+            academic: {
+                title: "一个努力的学期",
+                text: "学期结束了。\n\n你的成绩很好，但当你放下书本，发现自己好像错过了很多别的东西。",
+                icon: "📚"
+            },
+            awakened: {
+                title: "一个觉醒的学期",
+                text: "学期结束了。\n\n你找到了自己真正想要的东西，虽然过程很痛苦，但你终于明白了自己是谁。",
+                icon: "✨"
+            }
+        }
+    };
+
+    // ==================== DOM 元素 ====================
+    const elements = {
+        startScreen: document.getElementById('start-screen'),
+        difficultyScreen: document.getElementById('difficulty-screen'),
+        gameScreen: document.getElementById('game-screen'),
+        endingScreen: document.getElementById('ending-screen'),
+        startBtn: document.getElementById('start-btn'),
+        restartBtn: document.getElementById('restart-btn'),
+        card: document.getElementById('card'),
+        eventText: document.getElementById('event-text'),
+        avatarEmoji: document.getElementById('avatar-emoji'),
+        characterName: document.getElementById('character-name'),
+        characterRole: document.getElementById('character-role'),
+        weekDisplay: document.getElementById('week-number'),
+        endingTitle: document.getElementById('ending-title'),
+        endingText: document.getElementById('ending-text'),
+        endingStats: document.getElementById('ending-stats'),
+        endingIcon: document.querySelector('.ending-icon'),
+        backToDifficultyBtn: document.getElementById('back-to-difficulty-btn'),
+        btnLeft: document.getElementById('btn-left'),
+        btnRight: document.getElementById('btn-right'),
+        leftBtnText: document.getElementById('left-btn-text'),
+        rightBtnText: document.getElementById('right-btn-text'),
+        leftHintText: document.getElementById('left-hint-text'),
+        rightHintText: document.getElementById('right-hint-text'),
+        swipeLeftHint: document.getElementById('swipe-left-hint'),
+        swipeRightHint: document.getElementById('swipe-right-hint'),
+        feedbackMessage: document.getElementById('feedback-message'),
+        difficultyCard: document.getElementById('difficulty-card'),
+        previewIcon: document.getElementById('preview-icon'),
+        previewName: document.getElementById('preview-name'),
+        previewDesc: document.getElementById('preview-desc'),
+        diffEasyBtn: document.getElementById('diff-easy-btn'),
+        diffStandardBtn: document.getElementById('diff-standard-btn'),
+        diffHardBtn: document.getElementById('diff-hard-btn'),
+        confirmDifficultyBtn: document.getElementById('confirm-difficulty-btn')
+    };
+
+    // 状态进度条元素
+    const statusElements = {
+        energy: {
+            fill: document.getElementById('energy-fill'),
+            dot: document.getElementById('energy-dot')
+        },
+        academics: {
+            fill: document.getElementById('academics-fill'),
+            dot: document.getElementById('academics-dot')
+        },
+        connection: {
+            fill: document.getElementById('connection-fill'),
+            dot: document.getElementById('connection-dot')
+        },
+        self: {
+            fill: document.getElementById('self-fill'),
+            dot: document.getElementById('self-dot')
+        }
+    };
+
+    // 滑动配置
+    const SWIPE_THRESHOLD = 100;
+
+    // 当前事件数据
+    let currentEvent = null;
+
+    // ==================== 滑动变量 ====================
+    let startX = 0;
+    let currentX = 0;
+    let isDragging = false;
+
+    // ==================== 初始化游戏 ====================
+    function initGame(difficulty = 'standard') {
+        currentDifficulty = difficulty;
+        const config = DIFFICULTY_CONFIG[difficulty];
+
+        gameState.energy = config.initialStats.energy;
+        gameState.academics = config.initialStats.academics;
+        gameState.connection = config.initialStats.connection;
+        gameState.self = config.initialStats.self;
+        gameState.week = 1;
+        gameState.daysLeft = 112;
+        gameState.ddlPressure = 0;
+        gameState.gameOver = false;
+        gameState.isAnimating = false;
+        gameState.usedEvents = [];
+        gameState.inHighPressurePeriod = false;
+        gameState.highPressureWeeksLeft = 0;
+        currentEvent = null;
+
+        startX = 0;
+        currentX = 0;
+        isDragging = false;
+
+        elements.card.style.transition = '';
+        elements.card.style.transform = '';
+        elements.card.style.opacity = '';
+        elements.card.classList.remove('dragging', 'swipe-left-complete', 'swipe-right-complete', 'entering', 'snap-back');
+
+        if (elements.swipeLeftHint) {
+            elements.swipeLeftHint.style.opacity = '0';
+            elements.swipeLeftHint.style.transform = '';
+        }
+        if (elements.swipeRightHint) {
+            elements.swipeRightHint.style.opacity = '0';
+            elements.swipeRightHint.style.transform = '';
+        }
+
+        removeEventListeners();
+
+        const cardButtons = elements.card.querySelectorAll('.card-button');
+        cardButtons.forEach(btn => {
+            btn.onclick = null;
+            btn.style.animation = '';
+            btn.style.transform = '';
+            btn.style.boxShadow = '';
+        });
+
+        showScreen('game');
+        updateStatusDots();
+
+        setTimeout(() => {
+            nextEvent();
+        }, 50);
+    }
+
+    // ==================== 显示界面 ====================
+    function showScreen(screenName) {
+        elements.startScreen.classList.remove('active');
+        elements.difficultyScreen.classList.remove('active');
+        elements.gameScreen.classList.remove('active');
+        elements.endingScreen.classList.remove('active');
+
+        switch(screenName) {
+            case 'start':
+                elements.startScreen.classList.add('active');
+                break;
+            case 'difficulty':
+                elements.difficultyScreen.classList.add('active');
+                break;
+            case 'game':
+                elements.gameScreen.classList.add('active');
+                break;
+            case 'ending':
+                elements.endingScreen.classList.add('active');
+                break;
+        }
+    }
+
+    // ==================== 获取下一个事件 ====================
+    function getNextEvent() {
+        const availableEvents = EVENTS.filter(event => !gameState.usedEvents.includes(event.text));
+
+        if (availableEvents.length === 0) {
+            gameState.usedEvents = [];
+            return getNextEvent();
+        }
+
+        let eventPool = availableEvents;
+        const config = DIFFICULTY_CONFIG[currentDifficulty];
+        const threshold = config.ddlThreshold || 45;
+
+        if (gameState.ddlPressure > threshold) {
+            const ddlEvents = availableEvents.filter(e => e.isDDL);
+            if (ddlEvents.length > 0 && Math.random() < 0.6) {
+                eventPool = ddlEvents;
+            }
+        }
+
+        const randomIndex = Math.floor(Math.random() * eventPool.length);
+        const selectedEvent = eventPool[randomIndex];
+        gameState.usedEvents.push(selectedEvent.text);
+
+        return selectedEvent;
+    }
+
+    function getDebuffEvent() {
+        const randomIndex = Math.floor(Math.random() * DEBUFF_EVENTS.length);
+        return DEBUFF_EVENTS[randomIndex];
+    }
+
+    // ==================== 高压期处理 ====================
+    function handleHighPressurePeriod() {
+        const config = DIFFICULTY_CONFIG[currentDifficulty];
+
+        if (!gameState.inHighPressurePeriod) {
+            const threshold = config.ddlThreshold || 45;
+            if (gameState.ddlPressure > threshold) {
+                const chance = config.highPressureChance || 0.5;
+                if (Math.random() < chance) {
+                    gameState.inHighPressurePeriod = true;
+                    gameState.highPressureWeeksLeft = config.highPressureDuration || 5;
+                    playSound('pressure');
+                }
+            }
+        } else {
+            gameState.highPressureWeeksLeft--;
+            if (gameState.highPressureWeeksLeft <= 0) {
+                gameState.inHighPressurePeriod = false;
+            }
+        }
+    }
+
+    // ==================== 显示下一个事件 ====================
+    function nextEvent() {
+        const config = DIFFICULTY_CONFIG[currentDifficulty];
+
+        if (gameState.week > config.maxWeeks) {
+            endGame('semester');
+            return;
+        }
+
+        elements.weekDisplay.textContent = gameState.week;
+
+        if (config.hasDebuffEvents && gameState.week % 10 === 0 && gameState.week > 1) {
+            const debuffEvent = getDebuffEvent();
+            displayEvent(debuffEvent);
+        } else {
+            const event = getNextEvent();
+            displayEvent(event);
+        }
+
+        handleHighPressurePeriod();
+        updateStatusDots();
+    }
+
+    // ==================== 显示事件 ====================
+    function displayEvent(event) {
+        currentEvent = event;
+        elements.eventText.textContent = event.text;
+
+        if (event.character) {
+            elements.avatarEmoji.textContent = event.character.avatar || '';
+            elements.characterName.textContent = event.character.name || '';
+            elements.characterRole.textContent = event.character.role || '';
+
+            const characterSection = document.querySelector('.character-section');
+            if (!event.character.name && !event.character.role) {
+                characterSection.style.display = 'none';
+            } else {
+                characterSection.style.display = 'flex';
+            }
+        }
+
+        elements.leftBtnText.textContent = event.left.text;
+        elements.rightBtnText.textContent = event.right.text;
+        elements.leftHintText.textContent = event.left.text;
+        elements.rightHintText.textContent = event.right.text;
+
+        elements.swipeLeftHint.style.opacity = 0;
+        elements.swipeRightHint.style.opacity = 0;
+
+        setupSwipeHandlers();
+    }
+
+    // ==================== 滑动事件处理 ====================
+    function setupSwipeHandlers() {
+        removeEventListeners();
+        elements.card.addEventListener('mousedown', startDrag);
+        elements.card.addEventListener('touchstart', startDrag, { passive: false });
+    }
+
+    function removeEventListeners() {
+        elements.card.removeEventListener('mousedown', startDrag);
+        elements.card.removeEventListener('touchstart', startDrag);
+        document.removeEventListener('mousemove', drag);
+        document.removeEventListener('touchmove', drag);
+        document.removeEventListener('mouseup', endDrag);
+        document.removeEventListener('touchend', endDrag);
+    }
+
+    function startDrag(e) {
+        if (gameState.isAnimating) return;
+
+        e.preventDefault();
+
+        startX = e.clientX || (e.touches && e.touches[0].clientX);
+        if (startX === undefined) return;
+
+        isDragging = true;
+        currentX = 0;
+
+        elements.card.style.transition = 'none';
+        elements.card.classList.add('dragging');
+
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('touchmove', drag, { passive: false });
+        document.addEventListener('mouseup', endDrag);
+        document.addEventListener('touchend', endDrag);
+    }
+
+    function drag(e) {
+        if (!isDragging || gameState.isAnimating) return;
+
+        e.preventDefault();
+
+        const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+        if (clientX === undefined) return;
+
+        currentX = clientX - startX;
+
+        const maxDrag = window.innerWidth * 0.4;
+        currentX = Math.max(-maxDrag, Math.min(maxDrag, currentX));
+
+        const rotation = (currentX / maxDrag) * 5;
+
+        elements.card.style.transform = `translateX(${currentX}px) rotate(${rotation}deg)`;
+
+        const progress = Math.min(Math.abs(currentX) / SWIPE_THRESHOLD, 1);
+
+        if (currentX < 0) {
+            elements.swipeLeftHint.style.opacity = progress;
+            elements.swipeRightHint.style.opacity = 0;
+            elements.swipeLeftHint.style.transform = `scale(${0.8 + progress * 0.4})`;
+        } else if (currentX > 0) {
+            elements.swipeRightHint.style.opacity = progress;
+            elements.swipeLeftHint.style.opacity = 0;
+            elements.swipeRightHint.style.transform = `scale(${0.8 + progress * 0.4})`;
+        } else {
+            elements.swipeLeftHint.style.opacity = 0;
+            elements.swipeRightHint.style.opacity = 0;
+        }
+
+        const btnLeft = elements.card.querySelector('.card-button-left');
+        const btnRight = elements.card.querySelector('.card-button-right');
+
+        if (currentX < -30) {
+            highlightButton(btnLeft, true);
+            highlightButton(btnRight, false);
+        } else if (currentX > 30) {
+            highlightButton(btnRight, true);
+            highlightButton(btnLeft, false);
+        } else {
+            highlightButton(btnLeft, false);
+            highlightButton(btnRight, false);
+        }
+    }
+
+    function highlightButton(btn, highlight) {
+        if (highlight) {
+            btn.style.transform = 'scale(1.08)';
+            btn.style.boxShadow = '0 0 18px rgba(255, 255, 255, 0.5)';
+        } else {
+            btn.style.transform = '';
+            btn.style.boxShadow = '';
+        }
+    }
+
+    function endDrag(e) {
+        if (!isDragging || gameState.isAnimating) return;
+
+        isDragging = false;
+        elements.card.classList.remove('dragging');
+
+        document.removeEventListener('mousemove', drag);
+        document.removeEventListener('touchmove', drag);
+        document.removeEventListener('mouseup', endDrag);
+        document.removeEventListener('touchend', endDrag);
+
+        const btnLeft = elements.card.querySelector('.card-button-left');
+        const btnRight = elements.card.querySelector('.card-button-right');
+        highlightButton(btnLeft, false);
+        highlightButton(btnRight, false);
+
+        const distance = Math.abs(currentX);
+
+        if (distance >= SWIPE_THRESHOLD) {
+            const direction = currentX > 0 ? '右' : '左';
+
+            if (currentX > 0) {
+                executeSwipe('right', currentEvent.right.effect);
+            } else {
+                executeSwipe('left', currentEvent.left.effect);
+            }
+        } else {
+            snapBack();
+        }
+    }
+
+    function snapBack() {
+        elements.card.style.transition = 'transform 0.3s ease-out';
+        elements.card.style.transform = 'translateX(0) rotate(0deg)';
+
+        const buttons = elements.card.querySelectorAll('.card-button');
+        buttons.forEach(btn => {
+            btn.style.animation = 'shake 0.3s';
+        });
+
+        setTimeout(() => {
+            buttons.forEach(btn => {
+                btn.style.animation = '';
+            });
+            elements.swipeLeftHint.style.opacity = 0;
+            elements.swipeRightHint.style.opacity = 0;
+            elements.swipeLeftHint.style.transform = '';
+            elements.swipeRightHint.style.transform = '';
+        }, 300);
+    }
+
+    // ==================== 执行滑动 ====================
+    function executeSwipe(direction, effect) {
+        if (gameState.isAnimating) return;
+        gameState.isAnimating = true;
+
+        removeEventListeners();
+
+        const cardButtons = elements.card.querySelectorAll('.card-button');
+        cardButtons.forEach(btn => btn.onclick = null);
+
+        if (navigator.vibrate) {
+            navigator.vibrate(50);
+        }
+
+        flashScreen();
+
+        // 播放滑动音效
+        playSound('swipe');
+
+        // 根据effect正负播放positive/negative音效
+        const totalEffect = (effect.E || 0) + (effect.A || 0) + (effect.C || 0) + (effect.S || 0);
+        if (totalEffect >= 0) {
+            playSound('positive');
+        } else {
+            playSound('negative');
+        }
+
+        const endX = direction === 'right' ? '200%' : '-200%';
+        const endRotation = direction === 'right' ? '8deg' : '-8deg';
+
+        elements.card.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        elements.card.style.transform = `translateX(${endX}) rotate(${endRotation})`;
+
+        const btn = direction === 'right'
+            ? elements.card.querySelector('.card-button-right')
+            : elements.card.querySelector('.card-button-left');
+        highlightButton(btn, true);
+
+        setTimeout(() => {
+            applyChoiceEffect(effect);
+
+            showFeedback(`第${gameState.week}周 · 选择已生效`);
+
+            if (checkGameOver()) {
+                return;
+            }
+
+            elements.card.style.transition = 'none';
+            elements.card.style.transform = '';
+            elements.card.style.opacity = '0';
+
+            highlightButton(btn, false);
+
+            gameState.week++;
+            gameState.daysLeft -= 7;
+            const ddlConfig = DIFFICULTY_CONFIG[currentDifficulty].ddlMultiplier;
+            gameState.ddlPressure += ddlConfig.min + Math.random() * (ddlConfig.max - ddlConfig.min);
+
+            setTimeout(() => {
+                elements.card.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
+                elements.card.style.transform = 'scale(1)';
+                elements.card.style.opacity = '1';
+
+                setTimeout(() => {
+                    elements.card.style.transition = '';
+                }, 300);
+            }, 50);
+
+            nextEvent();
+            gameState.isAnimating = false;
+        }, 400);
+    }
+
+    function flashScreen() {
+        const flash = document.createElement('div');
+        flash.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.3);
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 1;
+            transition: opacity 0.2s;
+        `;
+        document.body.appendChild(flash);
+
+        setTimeout(() => {
+            flash.style.opacity = '0';
+            setTimeout(() => {
+                document.body.removeChild(flash);
+            }, 200);
+        }, 50);
+    }
+
+    // ==================== 应用选择效果 ====================
+    function applyChoiceEffect(effect) {
+        const config = DIFFICULTY_CONFIG[currentDifficulty];
+
+        if (effect.E) {
+            const change = effect.E < 0 ? effect.E * config.negativeMultiplier : effect.E * config.positiveMultiplier;
+            gameState.energy = clamp(gameState.energy + change, 0, 100);
+        }
+        if (effect.A) {
+            const change = effect.A < 0 ? effect.A * config.negativeMultiplier : effect.A * config.positiveMultiplier;
+            gameState.academics = clamp(gameState.academics + change, 0, 100);
+        }
+        if (effect.C) {
+            const change = effect.C < 0 ? effect.C * config.negativeMultiplier : effect.C * config.positiveMultiplier;
+            gameState.connection = clamp(gameState.connection + change, 0, 100);
+        }
+        if (effect.S) {
+            const change = effect.S < 0 ? effect.S * config.negativeMultiplier : effect.S * config.positiveMultiplier;
+            gameState.self = clamp(gameState.self + change, 0, 100);
+        }
+
+        if (gameState.inHighPressurePeriod && effect.E < 0) {
+            const extraLoss = effect.E * (config.highPressureEnergyMultiplier - 1);
+            gameState.energy = clamp(gameState.energy + extraLoss, 0, 100);
+        }
+    }
+
+    function showFeedback(message) {
+        elements.feedbackMessage.textContent = message;
+        elements.feedbackMessage.classList.add('show');
+
+        setTimeout(() => {
+            elements.feedbackMessage.classList.remove('show');
+        }, 1500);
+    }
+
+    // ==================== 检查游戏是否结束 ====================
+    function checkGameOver() {
+        if (gameState.energy <= 0) {
+            endGame('energy');
+            return true;
+        }
+        if (gameState.academics <= 0) {
+            endGame('academics');
+            return true;
+        }
+        if (gameState.connection <= 0) {
+            endGame('connection');
+            return true;
+        }
+        if (gameState.self <= 0) {
+            endGame('self');
+            return true;
+        }
+        return false;
+    }
+
+    // ==================== 结束游戏 ====================
+    function endGame(type) {
+        gameState.gameOver = true;
+
+        removeEventListeners();
+
+        const cardButtons = elements.card.querySelectorAll('.card-button');
+        cardButtons.forEach(btn => btn.onclick = null);
+
+        elements.card.style.transition = '';
+        elements.card.style.transform = '';
+        elements.card.style.opacity = '';
+        elements.card.classList.remove('dragging', 'swipe-left-complete', 'swipe-right-complete', 'entering', 'snap-back');
+
+        elements.swipeLeftHint.style.opacity = '0';
+        elements.swipeRightHint.style.opacity = '0';
+        elements.swipeLeftHint.style.transform = '';
+        elements.swipeRightHint.style.transform = '';
+
+        // 播放游戏结束音效
+        playSound('gameover');
+
+        let ending;
+        if (type === 'semester') {
+            const avg = (gameState.energy + gameState.academics + gameState.connection + gameState.self) / 4;
+            const maxStat = Math.max(gameState.energy, gameState.academics, gameState.connection, gameState.self);
+
+            if (avg > 60) {
+                ending = ENDINGS.semester.balanced;
+            } else if (gameState.connection === maxStat) {
+                ending = ENDINGS.semester.social;
+            } else if (gameState.academics === maxStat) {
+                ending = ENDINGS.semester.academic;
+            } else if (gameState.self === maxStat) {
+                ending = ENDINGS.semester.awakened;
+            } else {
+                ending = ENDINGS.semester.balanced;
+            }
+        } else {
+            ending = ENDINGS[type];
+        }
+
+        if (ending.icon) {
+            elements.endingIcon.textContent = ending.icon;
+        }
+        elements.endingTitle.textContent = ending.title;
+        elements.endingText.textContent = ending.text;
+        elements.endingStats.innerHTML = `
+            <span>☕ ${Math.round(gameState.energy)}</span>
+            <span>📖 ${Math.round(gameState.academics)}</span>
+            <span>❤️ ${Math.round(gameState.connection)}</span>
+            <span>🪞 ${Math.round(gameState.self)}</span>
+        `;
+
+        showScreen('ending');
+    }
+
+    // ==================== 更新状态进度条 ====================
+    function updateStatusDots() {
+        const stats = {
+            energy: gameState.energy,
+            academics: gameState.academics,
+            connection: gameState.connection,
+            self: gameState.self
+        };
+
+        Object.keys(stats).forEach(statName => {
+            const value = stats[statName];
+            const elements = statusElements[statName];
+
+            if (elements.fill && elements.dot) {
+                elements.fill.style.width = `${value}%`;
+                elements.dot.style.left = `calc(${value}% - 7px)`;
+
+                if (value <= 30) {
+                    elements.fill.classList.add('low');
+                } else {
+                    elements.fill.classList.remove('low');
+                }
+            }
+        });
+    }
+
+    function clamp(value, min, max) {
+        return Math.min(Math.max(value, min), max);
+    }
+
+    // ==================== 键盘控制 ====================
+    document.addEventListener('keydown', (e) => {
+        if (!elements.gameScreen.classList.contains('active') || gameState.isAnimating) return;
+
+        if (e.key === 'ArrowLeft' && currentEvent) {
+            executeSwipe('left', currentEvent.left.effect);
+        } else if (e.key === 'ArrowRight' && currentEvent) {
+            executeSwipe('right', currentEvent.right.effect);
+        }
+    });
+
+    // ==================== 按钮点击事件 ====================
+    function setupButtonHandlers() {
+        const btnLeft = elements.card.querySelector('.card-button-left');
+        const btnRight = elements.card.querySelector('.card-button-right');
+
+        if (btnLeft) {
+            btnLeft.onclick = () => {
+                if (!gameState.isAnimating && currentEvent) {
+                    executeSwipe('left', currentEvent.left.effect);
+                }
+            };
+        }
+
+        if (btnRight) {
+            btnRight.onclick = () => {
+                if (!gameState.isAnimating && currentEvent) {
+                    executeSwipe('right', currentEvent.right.effect);
+                }
+            };
+        }
+    }
+
+    // ==================== 难度选择相关函数 ====================
+    function updateDifficultyPreview(difficulty) {
+        const config = DIFFICULTY_CONFIG[difficulty];
+        elements.previewIcon.textContent = config.icon;
+        elements.previewName.textContent = config.name;
+        elements.previewDesc.textContent = config.hint || config.description;
+
+        [elements.diffEasyBtn, elements.diffStandardBtn, elements.diffHardBtn].forEach(btn => {
+            btn.classList.remove('selected');
+        });
+
+        switch(difficulty) {
+            case 'easy':
+                elements.diffEasyBtn.classList.add('selected');
+                break;
+            case 'standard':
+                elements.diffStandardBtn.classList.add('selected');
+                break;
+            case 'hard':
+                elements.diffHardBtn.classList.add('selected');
+                break;
+        }
+    }
+
+    function selectDifficulty(difficulty) {
+        currentDifficulty = difficulty;
+        updateDifficultyPreview(difficulty);
+    }
+
+    function startGameWithDifficulty() {
+        elements.difficultyCard.style.transition = 'transform 0.5s ease-out, opacity 0.5s ease-out';
+        elements.difficultyCard.style.transform = 'translateY(-100vh) rotate(10deg)';
+        elements.difficultyCard.style.opacity = '0';
+
+        setTimeout(() => {
+            elements.difficultyCard.style.transition = '';
+            elements.difficultyCard.style.transform = '';
+            elements.difficultyCard.style.opacity = '';
+
+            initGame(currentDifficulty);
+        }, 500);
+    }
+
+    // ==================== 初始化事件绑定 ====================
+    elements.startBtn.addEventListener('click', () => {
+        currentDifficulty = 'standard';
+        updateDifficultyPreview('standard');
+        showScreen('difficulty');
+        // 初始化音效
+        initAudio();
+    });
+
+    elements.restartBtn.addEventListener('click', () => {
+        initGame(currentDifficulty);
+    });
+
+    elements.diffEasyBtn.addEventListener('click', () => selectDifficulty('easy'));
+    elements.diffStandardBtn.addEventListener('click', () => selectDifficulty('standard'));
+    elements.diffHardBtn.addEventListener('click', () => selectDifficulty('hard'));
+    elements.confirmDifficultyBtn.addEventListener('click', startGameWithDifficulty);
+
+    elements.backToDifficultyBtn.addEventListener('click', () => {
+        removeEventListeners();
+        showScreen('difficulty');
+    });
+
+    const originalNextEvent = nextEvent;
+    nextEvent = function() {
+        originalNextEvent();
+        setupButtonHandlers();
+    };
+
+    // ==================== 初始显示开始界面 ====================
+    showScreen('start');
+    updateDifficultyPreview('standard');
+    </script>
+</body>
+</html>
